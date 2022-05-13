@@ -64,7 +64,8 @@ class Title_Matcher:
         selected_threshold= self.threshold.get()
         input_file = self.file_path.get()
         
-        df1 = pd.read_excel(input_file,header=2,sheet_name=self.df1_combobox.get())
+        #df1 = pd.read_excel(input_file,header=2,sheet_name=self.df1_combobox.get())
+        df1 = pd.read_excel(input_file,sheet_name=self.df1_combobox.get())
         df2 = pd.read_excel(input_file,sheet_name=self.df2_combobox.get())
         indexer = rl.Index()
         indexer.add(Full())
@@ -79,10 +80,10 @@ class Title_Matcher:
         matches = potential_matches[potential_matches.sum(axis=1)> 0].reset_index()
         #print(matches)
 
-        accumulated = matches.loc[:,['level_0','level_1']].merge(df1.loc[:,['Title','ISBN']], left_on='level_0',right_index=True)
-        accumulated = accumulated.merge(df2.loc[:,['Long Title','Internal ID']], left_on='level_1',right_index=True)
+        accumulated = matches.loc[:,['level_0','level_1']].merge(df1.loc[:,['Title','ISBN','Online Location']], left_on='level_0',right_index=True)
+        accumulated = accumulated.merge(df2.loc[:,['Long Title','Internal ID','Section Code','Instructor Name']], left_on='level_1',right_index=True)
         accumulated.head()
-        accumulated.to_excel('{}-{}.xlsx'.format(path.basename(self.file_io.name),selected_threshold),index=False,columns=['Internal ID','Long Title', 'Title'])
+        accumulated.to_excel('{}-{}.xlsx'.format(path.basename(self.file_io.name),selected_threshold),index=False,columns=['Internal ID','Long Title', 'Title','Online Location','Section Code','Instructor Name'])
         dfStyler = accumulated.style.set_properties(**{'text-align': 'left'})
         dfStyler.set_table_styles([dict(selector='th', props=[('text-align', 'left')])])
         self.text_output.delete(1.0, 'end')
